@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuessGold | Number Guessing Game</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <!-- Scenic background -->
+    <div class="bg-scene" aria-hidden="true"></div>
+
+    <!-- ── TOP NAV BAR ─────────────────────────────── -->
+    <header class="topbar">
+        <a href="#" class="logo">
+            <span class="logo-icon">G</span>
+            <span>Guess<span class="gold-text">Gold</span></span>
+        </a>
+
+        <nav class="topbar-nav" id="topbarNav" hidden>
+            <a href="#" class="active"><span>🏠</span> Home</a>
+            <a href="#"><span>🎮</span> Play</a>
+            <a href="#"><span>🕐</span> History</a>
+            <a href="#"><span>👤</span> Profile</a>
+        </nav>
+
+        <div class="topbar-right">
+            <!-- Coin wallet (shown after login) -->
+            <div id="walletTopbar" class="wallet" hidden>
+                <span class="coin-icon">🪙</span>
+                <strong id="coinBalance">0</strong>
+                <button class="topbar-add" aria-label="Add coins">+</button>
+            </div>
+
+            <!-- User avatar (shown after login) -->
+            <div id="userBar" class="user-bar" hidden>
+                <div class="topbar-avatar" title="Profile">👤</div>
+                <button type="button" id="logoutButton" class="small-button">Logout</button>
+            </div>
+
+            <!-- Free-to-play badge (shown before login) -->
+            <div id="freeBadge" class="free-badge">Free to play</div>
+        </div>
+    </header>
+
+    <!-- ── AUTH PAGE (Login / Register) ───────────── -->
+    <div id="authPage">
+
+        <!-- Hero banner behind the auth card -->
+        <div class="hero-banner" style="min-height: 0; padding-bottom: 0;">
+            <div class="hero-text" style="max-width: 100%; text-align: center; margin: 0 auto;">
+                <span class="eyebrow">🎯 · GUESS · PLAY · EARN</span>
+                <h1 style="margin: 14px 0 10px;">
+                    Small guesses.<br>
+                    <span class="gold-text">Big rewards!</span>
+                </h1>
+                <p style="max-width: 420px; margin: 0 auto 28px; font-size: 15px;">
+                    Pick the secret number, beat the odds, and collect coins.
+                    Every round is a fresh chance to win.
+                </p>
+                <div class="hero-stats" style="justify-content: center;">
+                    <div class="hero-stat">
+                        <div class="hero-stat-icon">🎯</div>
+                        <div class="hero-stat-info">
+                            <strong>1–10</strong>
+                            <small>Number range</small>
+                        </div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-icon">⚡</div>
+                        <div class="hero-stat-info">
+                            <strong>3</strong>
+                            <small>Attempts</small>
+                        </div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-icon">🪙</div>
+                        <div class="hero-stat-info">
+                            <strong>+10</strong>
+                            <small>Coins per win</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auth card -->
+        <div style="position: relative; z-index: 2; padding: 30px 20px 60px;">
+            <section id="authSection" class="auth-card">
+
+                <!-- Top badge -->
+                <div class="auth-badge">⭐ NUMBER CHALLENGE</div>
+
+                <h2 id="authTitle">Create Your Account</h2>
+                <p class="muted">Sign in or register to start playing and earning coins.</p>
+
+                <!-- Tab switcher -->
+                <div class="auth-tabs" id="authTabs">
+                    <button class="auth-tab" id="tabRegister" type="button">Register</button>
+                    <button class="auth-tab active" id="tabLogin" type="button">Login</button>
+                </div>
+
+                <form id="authForm">
+                    <!-- Name (register only) -->
+                    <div id="nameField" class="form-field">
+                        <label for="playerName">Your Name</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">😊</span>
+                            <input
+                                type="text"
+                                id="playerName"
+                                placeholder="Enter your name"
+                                maxlength="40"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Username -->
+                    <div class="form-field">
+                        <label for="username">Username</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">#</span>
+                            <input
+                                type="text"
+                                id="username"
+                                placeholder="3–20 letters, numbers or underscores"
+                                minlength="3"
+                                maxlength="20"
+                                autocomplete="username"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-field">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🔒</span>
+                            <input
+                                type="password"
+                                id="password"
+                                placeholder="Enter a password (min 4 chars)"
+                                minlength="4"
+                                autocomplete="current-password"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <button type="submit" id="authSubmit" class="primary-button auth-submit">
+                        Create Account →
+                    </button>
+                </form>
+
+                <p id="authMessage" class="message" role="status" aria-live="polite"></p>
+
+                <div class="auth-switch">
+                    <span id="switchText">Already have an account?</span>
+                    <button type="button" id="showLogin" class="text-button">Login</button>
+                    <button type="button" id="showRegister" class="text-button" hidden>Register</button>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- ── GAME PAGE ───────────────────────────────── -->
+    <div id="gamePage" hidden>
+
+        <!-- Hero banner (shown when logged in) -->
+        <div class="hero-banner">
+            <div class="hero-text">
+                <span class="eyebrow">🎯 · GUESS · PLAY · EARN</span>
+                <h1>
+                    Small guesses.<br>
+                    <span class="gold-text">Big rewards!</span>
+                </h1>
+                <p>
+                    Pick the secret number, beat the odds, and collect coins.
+                    Every round is a fresh chance to win.
+                </p>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-icon">🎯</div>
+                        <div class="hero-stat-info">
+                            <strong>1–10</strong>
+                            <small>Number range</small>
+                        </div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-icon">⚡</div>
+                        <div class="hero-stat-info">
+                            <strong>3</strong>
+                            <small>Attempts</small>
+                        </div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-icon">🪙</div>
+                        <div class="hero-stat-info">
+                            <strong>+10</strong>
+                            <small>Coins per win</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Welcome card (top right) -->
+            <div class="welcome-card">
+                <div class="welcome-card-header">
+                    <div class="player-avatar" id="heroAvatar">P</div>
+                    <div class="welcome-name">
+                        <strong id="heroWelcomeName">Welcome back, Player!</strong>
+                        <span id="heroGameId">Your game ID: GG-000000</span>
+                    </div>
+                    <button class="edit-btn" type="button">✏️ Edit</button>
+                </div>
+                <div class="welcome-stats">
+                    <div class="welcome-stat">
+                        <div class="welcome-stat-icon">🪙</div>
+                        <strong id="heroCoins">0</strong>
+                        <small>Coin balance</small>
+                    </div>
+                    <div class="welcome-stat">
+                        <div class="welcome-stat-icon">🎮</div>
+                        <strong id="heroWins">0</strong>
+                        <small>Games won</small>
+                    </div>
+                    <div class="welcome-stat">
+                        <div class="welcome-stat-icon">👑</div>
+                        <strong id="heroPlayerId">GG-000000</strong>
+                        <small>Player ID</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main 3-column layout -->
+        <div class="page-body">
+            <div class="main-layout">
+
+                <!-- Left: Side navigation -->
+                <nav class="side-nav">
+                    <a href="#" class="active"><span class="nav-icon">🏠</span> Home</a>
+                    <a href="#"><span class="nav-icon">🎮</span> Play</a>
+                    <a href="#"><span class="nav-icon">🕐</span> History</a>
+                    <a href="#"><span class="nav-icon">👤</span> Profile</a>
+                    <div class="side-nav-footer">Good luck,<br>Player! 🏔️</div>
+                </nav>
+
+                <!-- Center: Game section -->
+                <section id="gameSection" class="game-layout">
+                    <div class="game-card">
+                        <div class="card-heading">
+                            <div>
+                                <span class="card-badge">⭐ NUMBER CHALLENGE</span>
+                                <h2>Guess the secret number</h2>
+                                <p class="muted" style="margin:6px 0 0; font-size:13px;">
+                                    The computer has picked a number between 1 and 10. Can you find it?
+                                </p>
+                            </div>
+                            <span id="roundNumber" class="round-badge">● ROUND READY</span>
+                        </div>
+
+                        <div id="numberDisplay" class="number-display">?</div>
+
+                        <div class="attempts-box">
+                            <span>Attempts left</span>
+                            <div id="attemptDots" class="attempt-dots">
+                                <span class="attempt-dot active"></span>
+                                <span class="attempt-dot active"></span>
+                                <span class="attempt-dot active"></span>
+                            </div>
+                            <strong id="attemptsLeft">3 / 3</strong>
+                        </div>
+
+                        <form id="guessForm" class="guess-form">
+                            <label for="guessInput">Enter your guess</label>
+                            <div class="input-row">
+                                <div class="input-wrapper" style="flex:1;">
+                                    <span class="input-icon">#</span>
+                                    <input
+                                        type="number"
+                                        id="guessInput"
+                                        min="1"
+                                        max="10"
+                                        step="1"
+                                        placeholder="Enter a number (1–10)"
+                                        required
+                                    >
+                                </div>
+                                <button type="submit" id="guessButton" class="primary-button">
+                                    Make a guess →
+                                </button>
+                            </div>
+                        </form>
+
+                        <button type="button" id="hintButton" class="hint-button">
+                            💡 Get Hint (−3 coins)
+                        </button>
+
+                        <div id="gameMessage" class="message" role="status" aria-live="polite">
+                            ℹ️ Make your first guess to get started.
+                        </div>
+
+                        <button type="button" id="newGameButton" class="secondary-button" hidden>
+                            ↻ Start New Round
+                        </button>
+
+                        <div class="rules-note">
+                            <strong>How to play</strong>
+                            <p>Correct guess: +10 coins. A hint costs 3 coins. Three incorrect guesses: −5 coins.</p>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity (below game card) -->
+                    <div class="info-card" style="margin-top: 0;">
+                        <div class="history-heading">
+                            <div>
+                                <span class="card-badge">🕐 RECENT ACTIVITY</span>
+                                <p style="margin: 6px 0 0; font-size: 12px; color: var(--muted);">Your game history</p>
+                            </div>
+                            <button type="button" id="clearHistoryButton" class="text-button">Clear</button>
+                        </div>
+                        <ul id="historyList" class="history-list">
+                            <li class="empty-history">No games yet. Start guessing!</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Right: Sidebar -->
+                <aside class="side-column">
+
+                    <!-- Daily Bonus -->
+                    <div class="info-card daily-card">
+                        <span class="card-badge">⭐ DAILY BONUS</span>
+                        <div style="display:flex; align-items:center; gap:14px; margin: 14px 0 10px;">
+                            <span style="font-size:36px;">🎁</span>
+                            <div>
+                                <h3 style="margin:0;">Your daily reward</h3>
+                                <p style="margin:4px 0 0; font-size:12px; color:var(--muted);">
+                                    Come back every day and collect a little extra gold.
+                                </p>
+                            </div>
+                        </div>
+                        <div style="color:var(--gold); font-size:22px; font-weight:900; margin-bottom:14px;">
+                            🪙 +20 coins
+                        </div>
+                        <button type="button" id="dailyRewardButton" class="primary-button" style="width:100%;">
+                            Claim reward →
+                        </button>
+                        <p id="dailyStatus" class="daily-status" aria-live="polite">
+                            Available once per day.
+                        </p>
+                    </div>
+
+                    <!-- Player Profile -->
+                    <div class="info-card">
+                        <span class="card-badge">👤 YOUR PROFILE</span>
+                        <div style="display:flex; align-items:center; gap:12px; margin:16px 0 14px;">
+                            <div class="player-avatar" style="width:44px;height:44px;font-size:18px;" id="profileAvatar">P</div>
+                            <div style="flex:1;">
+                                <strong id="profileName" style="display:block; font-size:16px;">Player</strong>
+                                <span id="profileUsername" style="display:block; color:var(--muted); font-size:12px;">@player</span>
+                            </div>
+                            <button class="edit-btn" type="button">✏️</button>
+                        </div>
+                        <div class="reward-row">
+                            <span style="color:var(--muted); font-size:12px;">Player ID</span>
+                            <strong id="profileId" style="font-size:12px;">GG-000000</strong>
+                        </div>
+                        <div class="reward-row">
+                            <span style="color:var(--muted); font-size:12px;">Member since</span>
+                            <strong id="profileSince" style="font-size:12px;">Today</strong>
+                        </div>
+                        <div class="reward-row" style="border-bottom:none; padding-bottom:0;">
+                            <span style="color:var(--muted); font-size:12px;">Coin balance</span>
+                            <strong id="walletBalance" style="color:var(--gold); font-size:12px;">0 coins</strong>
+                        </div>
+                    </div>
+
+                </aside>
+            </div>
+        </div>
+
+        <footer>
+            <p>GuessGold © 2026 · Play smart, collect coins!</p>
+            <p class="footer-note">Demo game only. Coins have no real-world monetary value.</p>
+        </footer>
+    </div>
+
+</body>
+</html>
